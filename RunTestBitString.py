@@ -6,7 +6,7 @@ from BitString import *
 
 def RandomGuessing(seed,runNumber):
     nextseed=seed
-    bitSizeList=[2,4,8,12,16,22]
+    bitSizeList=[2, 4, 8, 12, 16]
     runTimes=[]
     attempts=[]
     for x in bitSizeList:
@@ -31,8 +31,8 @@ def RandomGuessing(seed,runNumber):
         runTimes.append(runTimesrun)
         attempts.append(attemptsrun)
 
-    plotGraph(runTimes, bitSizeList, "AverageRunTime(ms)", "BitStringSize")
-    plotGraph(attempts, bitSizeList, "AverageNumberOfAttempts", "BitStringSize")
+    plotGraph(runTimes, bitSizeList, "RunTime(ms)", "BitStringSize")
+    plotGraph(attempts, bitSizeList, "NumberOfAttempts", "BitStringSize")
     #print(str(attempts))
 
 
@@ -43,10 +43,8 @@ def guessByMutation(seed,size,trynumber):
     attempts=0
     bitStringToGuess=BitString(size)
     nextseed=bitStringToGuess.randomSequence(nextseed)
-    #print("BitStringToGuess: " + str(bitStringToGuess))
     firstGuess=BitString(size)
     nextseed=firstGuess.randomSequence(nextseed)
-    #print("FirstGuess:       " + str(firstGuess))
     guessed=False
     while not guessed and attempts<trynumber:
         exe=BitString.mutate(firstGuess,nextseed)
@@ -59,20 +57,16 @@ def guessByMutation(seed,size,trynumber):
             firstGuess=mutantBitString
         if firstGuess.bitFitness(bitStringToGuess)==size:
             guessed=True
-            #print("easy guess")
             break
-            #print("i got it: "+str(firstGuess))
-            #print("attempts: "+str(attempts))
-    #if not guessed:
-    #    print("Final guess:      "+str(firstGuess))
-    #    print("nao consegui :(, attempts: "+str(attempts))
+
     end=time.time()
     return [attempts,((end-start)*1000),nextseed]
 
 
+
 def mutationTester(seed,runNumber):
     nextseed = seed
-    bitSizeList = [2, 4, 8, 12, 16, 22, 32]
+    bitSizeList = [2, 4, 8, 12, 16, 32, 64]
     runTimes = []
     attempts = []
     for x in bitSizeList:
@@ -83,46 +77,83 @@ def mutationTester(seed,runNumber):
             nextseed=exe[2]
             runTimethissize.append(exe[1])
             attemptsThissize.append(exe[0])
+
         runTimes.append(runTimethissize)
         attempts.append(attemptsThissize)
-    plotGraph(runTimes, bitSizeList, "AverageRunTime(ms)", "BitStringSize")
-    plotGraph(attempts, bitSizeList, "AverageNumberOfAttempts", "BitStringSize")
+    plotGraph(runTimes, bitSizeList, "RunTime(ms)", "BitStringSize")
+    plotGraph(attempts, bitSizeList, "NumberOfAttempts", "BitStringSize")
 
 def mutationPopulationTester(seed,runNumber):
     nextseed = seed
-    bitSizeList = [2, 4, 8, 12, 16, 22]
+    bitSizeList = [2, 4, 8, 12, 16, 32, 64]
     runTimes = []
     attempts = []
+    attemptsOfSolved=[]
     for x in bitSizeList:
         runTimethissize=[]
         attemptsThissize=[]
+        attemptsOfSolvedThisSize = []
         for i in range(runNumber):
             exe=populationMutate(nextseed,x)
             nextseed=exe[2]
             runTimethissize.append(exe[1])
             attemptsThissize.append(exe[0])
+            attemptsOfSolvedThisSize.append(exe[3])
+        while -1 in attemptsOfSolvedThisSize: attemptsOfSolvedThisSize.remove(-1)
         runTimes.append(runTimethissize)
         attempts.append(attemptsThissize)
-    plotGraph(runTimes, bitSizeList, "AverageRunTime(ms)", "BitStringSize")
-    plotGraph(attempts, bitSizeList, "AverageNumberOfAttempts(100 Strings Per Attempt)", "BitStringSize")
+        attemptsOfSolved.append(attemptsOfSolvedThisSize)
+    plotGraph(runTimes, bitSizeList, "Runtime(ms)", "BitStringSize")
+    plotGraph(attempts, bitSizeList, "Number of Generations until stagnation", "BitStringSize")
+    plotGraph(attemptsOfSolved, bitSizeList, "Generations to Find Solution ", "BitStringSize")
 
 def childrenTester(seed,runNumber):
     nextseed = seed
-    bitSizeList = [2, 4, 8, 12, 16, 22]
+    bitSizeList = [2, 4, 8, 12, 16, 32, 64]
     runTimes = []
     attempts = []
+    attemptsOfSolved = []
     for x in bitSizeList:
         runTimethissize=[]
         attemptsThissize=[]
+        attemptsOfSolvedThisSize = []
         for i in range(runNumber):
-            exe=populationChildrenAndMutate(nextseed,x)
+            exe=populationChildren(nextseed,x)
             nextseed=exe[2]
             runTimethissize.append(exe[1])
             attemptsThissize.append(exe[0])
+            attemptsOfSolvedThisSize.append(exe[3])
+        while -1 in attemptsOfSolvedThisSize: attemptsOfSolvedThisSize.remove(-1)
         runTimes.append(runTimethissize)
         attempts.append(attemptsThissize)
-    plotGraph(runTimes, bitSizeList, "AverageRunTime(ms)", "BitStringSize")
-    plotGraph(attempts, bitSizeList, "AverageNumberOfAttempts(100 Strings Per Attempt)", "BitStringSize")
+        attemptsOfSolved.append(attemptsOfSolvedThisSize)
+    plotGraph(runTimes, bitSizeList, "Runtime(ms)", "BitStringSize")
+    plotGraph(attempts, bitSizeList, "Number of Generations until stagnation", "BitStringSize")
+    plotGraph(attemptsOfSolved, bitSizeList, "Generations to Find Solution", "BitStringSize")
+
+def childrenTesterBADAPROACH(seed,runNumber):
+    nextseed = seed
+    bitSizeList = [2, 4, 8, 12, 16, 32, 64]
+    runTimes = []
+    attempts = []
+    attemptsOfSolved = []
+    for x in bitSizeList:
+        runTimethissize=[]
+        attemptsThissize=[]
+        attemptsOfSolvedThisSize = []
+        for i in range(runNumber):
+            exe=populationChildrenBADAPROACH(nextseed,x)
+            nextseed=exe[2]
+            runTimethissize.append(exe[1])
+            attemptsThissize.append(exe[0])
+            attemptsOfSolvedThisSize.append(exe[3])
+        while -1 in attemptsOfSolvedThisSize: attemptsOfSolvedThisSize.remove(-1)
+        runTimes.append(runTimethissize)
+        attempts.append(attemptsThissize)
+        attemptsOfSolved.append(attemptsOfSolvedThisSize)
+    plotGraph(runTimes, bitSizeList, "Runtime(ms)", "BitStringSize")
+    plotGraph(attempts, bitSizeList, "Number of Generations until stagnation", "BitStringSize")
+    plotGraph(attemptsOfSolved, bitSizeList, "Generations to Find Solution", "BitStringSize")
 
 def populationMutate(seed,size):
     attempts=0
@@ -130,82 +161,101 @@ def populationMutate(seed,size):
     nextseed = seed
     bitStringToGuess = BitString(size)
     nextseed = bitStringToGuess.randomSequence(nextseed)
-    population=[]
-    #print(str(bitStringToGuess))
+    attemptOfSolved=-1
+    solved=False
     def myfunct(bitstring):
         return bitstring.bitFitness(bitStringToGuess)
     firstpop=firstPopulation(nextseed,size,100)
     nextseed=firstpop[1]
     population=firstpop[0][:]
-    stop=False
-    totalfitness=0
-    while not stop:
+    olderPopulation=population[:29]
+    stagnationflag=0
+    while stagnationflag<3:
         population.sort(key=myfunct,reverse=True)
-        if population[0].bitFitness(bitStringToGuess)==size:
-            stop=True
-            break
         selection=population[:29]
-        totalfitnesslist=map(myfunct,selection)
-        temp=sum(totalfitnesslist)
-        if temp> totalfitness:
-            totalfitness=temp
-            #print(str(totalfitness))
-        else:
-            stop=True
-            break
-
+        if stagnationFlag(olderPopulation,selection,bitStringToGuess):
+            stagnationflag+=1
+        if myfunct(population[0])==size and not solved:
+            attemptOfSolved=attempts
+            solved=True
+        olderPopulation=selection[:]
         population.clear()
         attempts+=1
-        exe=populateByMutation(nextseed,size,100,selection)
-        population=exe[0][:]
+        exe=populateByMutation(nextseed,size,70,selection)
+        population=selection+exe[0][:]
         nextseed=exe[1]
     end=time.time()
-    #print(attempts)
-    return [attempts,((end-start)*1000),nextseed]
+    return [attempts,((end-start)*1000),nextseed,attemptOfSolved]
 
-def populationChildrenAndMutate(seed,size):
-    attempts=0
-    start=time.time()
+def populationChildren(seed,size):
+    attempts = 0
+    start = time.time()
     nextseed = seed
     bitStringToGuess = BitString(size)
     nextseed = bitStringToGuess.randomSequence(nextseed)
-    population=[]
-    #print(str(bitStringToGuess))
+    attemptOfSolved = -1
+    solved = False
+
     def myfunct(bitstring):
         return bitstring.bitFitness(bitStringToGuess)
-    firstpop=firstPopulation(nextseed,size,100)
-    nextseed=firstpop[1]
-    population=firstpop[0][:]
-    stop=False
-    totalfitness=0
-    while not stop:
-        population.sort(key=myfunct,reverse=True)
-        if population[0].bitFitness(bitStringToGuess)==size:
-            stop=True
-            break
-        selection=population[:29]
-        totalfitnesslist=map(myfunct,selection)
-        temp=sum(totalfitnesslist)
-        if temp> totalfitness:
-            totalfitness=temp
-            #print(str(totalfitness))
-        else:
-            #totalfitness = temp
-            stop=True
-            break
 
+    firstpop = firstPopulation(nextseed, size, 100)
+    nextseed = firstpop[1]
+    population = firstpop[0][:]
+    olderPopulation = population[:29]
+    stagnationflag = 0
+    while stagnationflag < 3:
+        population.sort(key=myfunct, reverse=True)
+        selection = population[:29]
+        if stagnationFlag(olderPopulation, selection, bitStringToGuess):
+            stagnationflag += 1
+        if myfunct(population[0])==size and not solved:
+            attemptOfSolved = attempts
+            solved = True
+        olderPopulation = selection[:]
         population.clear()
-        attempts+=1
-        exe1=populateByMutation(nextseed,size,70,selection)
-        population=exe1[0][:]
-        nextseed=exe1[1]
-        exe2=populateByChildren(nextseed,30,selection)
-        population=population+exe2[0][:]
-        nextseed=exe2[1]
-    end=time.time()
-    #print(attempts)
-    return [attempts,((end-start)*1000),nextseed]
+        attempts += 1
+        exe = populateByChildren(nextseed, 70, selection)
+        population = selection + exe[0][:]
+        nextseed = exe[1]
+    end = time.time()
+    # print(attempts)
+    return [attempts, ((end - start) * 1000), nextseed, attemptOfSolved]
 
+def populationChildrenBADAPROACH(seed,size):
+    attempts = 0
+    start = time.time()
+    nextseed = seed
+    bitStringToGuess = BitString(size)
+    nextseed = bitStringToGuess.randomSequence(nextseed)
+    attemptOfSolved = -1
+    solved = False
+
+    def myfunct(bitstring):
+        return bitstring.bitFitness(bitStringToGuess)
+
+    firstpop = firstPopulation(nextseed, size, 100)
+    nextseed = firstpop[1]
+    population = firstpop[0][:]
+    olderPopulation = population[:29]
+    stagnationflag = 0
+    while stagnationflag < 3:
+        population.sort(key=myfunct, reverse=True)
+        selection = population[:29]
+        if stagnationFlag(olderPopulation, selection, bitStringToGuess):
+            stagnationflag += 1
+        if myfunct(population[0])==size and not solved:
+            attemptOfSolved = attempts
+            solved = True
+        olderPopulation = selection[:]
+        population.clear()
+        attempts += 1
+        exe = populateByChildrenBADAPROACH(nextseed, 70, selection)
+        population = selection + exe[0][:]
+        nextseed = exe[1]
+    end = time.time()
+    # print(attempts)
+    return [attempts, ((end - start) * 1000), nextseed, attemptOfSolved]
 
 def firstPopulation(seed,size,populationsize):
     population=[]
@@ -236,7 +286,19 @@ def populateByChildren(seed,populationsize,initialpopulation):
         random.seed(nextseed)
         parents=random.sample(initialpopulation,k=2)
         nextseed = random.random()
-        child=BitString.makeChild(parents[0],parents[1])
+        child=BitString.makeChild(parents[0],parents[1],nextseed)
+        population.append(child[0])
+        nextseed=child[1]
+    return [population,nextseed]
+
+def populateByChildrenBADAPROACH(seed,populationsize,initialpopulation):
+    nextseed=seed
+    population=[]
+    for x in range(populationsize):
+        random.seed(nextseed)
+        parents=random.sample(initialpopulation,k=2)
+        nextseed = random.random()
+        child=BitString.makeChildBADAPROACH(parents[0],parents[1])
         population.append(child)
     return [population,nextseed]
 
@@ -259,5 +321,16 @@ def plotGraph(listY,listX,nameY,nameX):
     plt.show()
 
 
+def stagnationFlag(olderPopulation,youngerPopulation,bitStringToGuess):
+    def myfunct(bitstring):
+        return bitstring.bitFitness(bitStringToGuess)
+    youngerList=map(myfunct,youngerPopulation)
+    youngerFitness=sum(youngerList)
+    olderList = map(myfunct, olderPopulation)
+    olderFitness = sum(olderList)
+    if youngerFitness<=olderFitness:
+        return True
+    else:
+        return False
 
 

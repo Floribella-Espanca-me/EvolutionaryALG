@@ -7,17 +7,18 @@ from RunTestBitString import *
 
 
 def main():
-    #testebit=BitString(11)
-    #testebit.randomSequence(10)
-    #print(str(testebit))
-    #print(str(BitString.mutate(testebit,22)))
-    #print(str(testebit))
+    #exercicio 1:random guessing
+    #RandomGuessing(10,30)
 
-    #guessByMutation(11,6,1000)
-    #RandomGuessing(15, 10)
-    #populationMutate(13,32)
-    mutationTester(10,30)
-    #childrenTester(10,15)
+    #exercicio 2: mutation guessing
+    #mutationTester(10,30)
+
+    #exercicio 3: population by mutation
+    #mutationPopulationTester(10,30)
+
+    #exercicio 4: population by crossover
+    childrenTester(10,30)
+    #childrenTesterBADAPROACH(10,30)
 
 
 

@@ -52,7 +52,24 @@ class BitString:
             return sum.count(0)+sum.count(2)
 
     @staticmethod
-    def makeChild(BitStringF,BitStringM):
+    def makeChild(BitStringF,BitStringM,seed):
+        nextseed=seed
+        if len(BitStringF.sequence) != len(BitStringM.sequence):
+            print('i think we should break up :(')
+            return None
+        else:
+            random.seed(nextseed)
+            nextseed=random.random()
+            size=len(BitStringF.sequence)
+            index = math.floor(nextseed * size)
+            child=BitString(size)
+            sequence=BitStringF.sequence[0:index]+BitStringM.sequence[index:]
+            child.sequence=sequence
+            #print(str(sequence))
+            return [child,nextseed]
+
+    @staticmethod
+    def makeChildBADAPROACH(BitStringF,BitStringM):
         if len(BitStringF.sequence) != len(BitStringM.sequence):
             print('i think we should break up :(')
             return None
